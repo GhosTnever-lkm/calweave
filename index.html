@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="CalWeave — локальный планировщик календарных файлов ICS. Находит пересечения встреч и свободные окна.">
+  <title>CalWeave — календарь без путаницы</title>
+  <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="#top" aria-label="CalWeave, главная"><span class="brand-mark">cw</span><span>CalWeave</span></a>
+      <div class="side-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+      <button class="nav-item active" type="button"><span>▦</span> Расписание <kbd>1</kbd></button>
+      <button class="nav-item" id="free-nav" type="button"><span>◷</span> Свободные окна</button>
+      <div class="side-bottom"><span class="privacy-dot"></span><div><b>Локальный режим</b><small>Календарь не покидает устройство</small></div></div>
+    </aside>
+
+    <main id="top" class="main">
+      <header class="topbar">
+        <div class="breadcrumbs">Рабочее пространство <span>/</span> <b>Расписание</b></div>
+        <div class="top-actions"><button class="icon-button" id="today-btn" type="button">Сегодня</button><button class="avatar" aria-label="CalWeave">G</button></div>
+      </header>
+
+      <section class="welcome">
+        <div><p class="eyebrow">КАЛЕНДАРЬ В ПОРЯДКЕ</p><h1>Ваше время,<br><span>собранное воедино.</span></h1><p class="intro">Импортируйте календарь, сразу увидите пересечения и найдите удобное окно для следующего дела.</p></div>
+        <div class="welcome-actions"><label class="button primary" for="ics-file">＋ Импортировать .ics</label><button class="button quiet" id="demo-btn" type="button">Открыть демо</button><input id="ics-file" type="file" accept=".ics,text/calendar" hidden></div>
+      </section>
+
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section id="warning-box" class="warning-box" aria-live="polite" hidden></section>
+
+      <section class="metrics" aria-label="Сводка календаря">
+        <article class="metric-card"><div class="metric-head"><span>СОБЫТИЙ</span><span class="metric-icon violet">▦</span></div><strong id="event-count">0</strong><small>загружено в эту сессию</small></article>
+        <article class="metric-card"><div class="metric-head"><span>ПЕРЕСЕЧЕНИЯ</span><span class="metric-icon rose">⟷</span></div><strong id="conflict-count">0</strong><small>встреч идут одновременно</small></article>
+        <article class="metric-card"><div class="metric-head"><span>СВОБОДНЫЕ ОКНА</span><span class="metric-icon mint">◷</span></div><strong id="slot-count">—</strong><small>на выбранный диапазон</small></article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel agenda-panel">
+          <div class="panel-head"><div><p class="eyebrow">ВАШ КАЛЕНДАРЬ</p><h2>Повестка</h2></div><div class="panel-tools"><button id="sort-btn" class="small-button" type="button">По времени ↑</button><button id="export-btn" class="small-button" type="button" disabled>Экспорт .ics</button></div></div>
+          <div class="date-strip"><button id="prev-day" aria-label="Предыдущий день">‹</button><div><b id="date-title">Загрузите календарь</b><span id="date-subtitle">Поддерживаются события из .ics</span></div><button id="next-day" aria-label="Следующий день">›</button></div>
+          <div id="agenda" class="agenda">
+            <div class="empty-state"><div class="empty-art">◷</div><h3>Начните с календаря</h3><p>Добавьте файл .ics или откройте демо, чтобы посмотреть, как CalWeave находит накладки и свободное время.</p><button class="button primary compact" id="empty-demo" type="button">Загрузить пример</button></div>
+          </div>
+        </article>
+        <aside class="right-column">
+          <article class="panel focus-panel"><div class="panel-head"><div><p class="eyebrow">ПЛАН НА ДЕНЬ</p><h2>Найти свободное время</h2></div></div><p class="panel-copy">Подберите промежуток под задачу в пределах рабочего дня. Свободный интервал может быть длиннее выбранного времени.</p>
+            <div class="form-row"><label for="slot-date">Дата</label><input id="slot-date" type="date"></div>
+            <div class="form-row"><label for="duration">Длительность</label><select id="duration"><option value="30">30 минут</option><option value="45">45 минут</option><option value="60" selected>1 час</option><option value="90">1,5 часа</option><option value="120">2 часа</option></select></div>
+            <div class="form-row hours-row"><div><label for="work-start">Рабочий день</label><div class="time-fields"><input id="work-start" type="time" value="09:00" aria-label="Начало рабочего дня"><span>—</span><input id="work-end" type="time" value="18:00" aria-label="Конец рабочего дня"></div></div></div>
+            <button id="find-slots" class="button primary full" type="button">Найти интервалы <span>↗</span></button>
+            <div id="slots" class="slots" aria-live="polite"><p class="muted">Свободные интервалы появятся здесь.</p></div>
+          </article>
+          <article class="panel legend-panel"><div class="panel-head"><div><p class="eyebrow">ПОДСКАЗКИ</p><h2>Что означает</h2></div></div><div class="legend-item"><i class="legend-dot busy"></i><span><b>Пересечение</b><small>Два события занимают одно время</small></span></div><div class="legend-item"><i class="legend-dot free"></i><span><b>Свободное окно</b><small>Подходит под заданную длительность</small></span></div><div class="privacy-note"><span>⌁</span>Файлы обрабатываются только в этом браузере. Сервер и аккаунт не нужны.</div></article>
+        </aside>
+      </section>
+      <footer>CalWeave <span>·</span> Открытый инструмент от <a href="https://github.com/GhosTnever-lkm">GhosTnever</a> <span>·</span> <a href="https://github.com/GhosTnever-lkm/calweave">Исходный код</a></footer>
+    </main>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
