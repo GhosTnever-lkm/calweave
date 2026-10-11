@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build and coverage output
+dist/
+build/
+coverage/
+.nyc_output/
+*.tgz
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temp
+*.log
+npm-debug.log*
+.cache/
+tmp/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
