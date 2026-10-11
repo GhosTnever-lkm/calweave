@@ -8,7 +8,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Package app
         run: |
           zip -r "CalWeave-${GITHUB_REF_NAME}.zip" index.html app.js calendar-core.js styles.css server.mjs package.json README.md LICENSE CHANGELOG.md VERSION assets tests .github
