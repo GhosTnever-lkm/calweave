@@ -58,23 +58,34 @@ function escapeText(value) {
 }
 
 function validDateParts(y, mo, d, h = 0, mi = 0, s = 0) {
-  if (mo < 1 || mo > 12 || d < 1 || d > 31 || h > 23 || mi > 59 || s > 60) return false;
+  if (mo < 1 || mo > 12 || d < 1 || d > 31 || h > 23 || mi > 59 || s > 59) return false;
   const dt = new Date(0); dt.setFullYear(y, mo - 1, d); dt.setHours(h, mi, s, 0);
-  return dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d && dt.getHours() === h && dt.getMinutes() === mi;
+  return dt.getFullYear() === y && dt.getMonth() === mo - 1 && dt.getDate() === d && dt.getHours() === h && dt.getMinutes() === mi && dt.getSeconds() === s;
+}
+function makeDate(y, mo, d, h, mi, s, utc) {
+  const date = new Date(0);
+  if (utc) {
+    date.setUTCFullYear(y, mo - 1, d);
+    date.setUTCHours(h, mi, s, 0);
+  } else {
+    date.setFullYear(y, mo - 1, d);
+    date.setHours(h, mi, s, 0);
+  }
+  return date;
 }
 function parseDate(value, params, warnings, line, propName) {
   const dateMatch = /^(\d{4})(\d{2})(\d{2})$/.exec(value);
   if (dateMatch) {
     const [, ys, mos, ds] = dateMatch, y = +ys, mo = +mos, d = +ds;
     if (!validDateParts(y, mo, d)) { warnings.push({ code: "INVALID_DATE", line, property: propName, value }); return null; }
-    const date = new Date(0); date.setFullYear(y, mo - 1, d); date.setHours(0, 0, 0, 0);
+    const date = makeDate(y, mo, d, 0, 0, 0, false);
     return { date, allDay: true, utc: false };
   }
   const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})?(Z)?$/.exec(value);
   if (!m) { warnings.push({ code: "INVALID_DATETIME", line, property: propName, value }); return null; }
   const y = +m[1], mo = +m[2], d = +m[3], h = +m[4], mi = +m[5], s = +(m[6] || 0), utc = !!m[7];
   if (!validDateParts(y, mo, d, h, mi, s)) { warnings.push({ code: "INVALID_DATETIME", line, property: propName, value }); return null; }
-  const date = utc ? new Date(Date.UTC(y, mo - 1, d, h, mi, s)) : new Date(y, mo - 1, d, h, mi, s);
+  const date = makeDate(y, mo, d, h, mi, s, utc);
   return Number.isNaN(date.getTime()) ? null : { date, allDay: false, utc };
 }
 
