@@ -1,6 +1,6 @@
 {
   "name": "calweave",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
