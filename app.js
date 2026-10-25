@@ -52,8 +52,9 @@ function renderWarnings() {
 }
 function acceptICS(text, fileName = "календарь") {
   try {
-    const result = parseICS(text); events = result.events; warnings = result.warnings;
-    if (!events.length) { setNotice("В файле не найдены события VEVENT.", "error"); return; }
+    const result = parseICS(text);
+    if (!result.events.length) { setNotice("В файле не найдены события VEVENT.", "error"); return; }
+    events = result.events; warnings = result.warnings;
     const first = events.find((e) => e.start)?.start; if (first) { activeDay = new Date(first); activeDay.setHours(0,0,0,0); $("slot-date").value = toDateInput(activeDay); }
     render(); renderWarnings(); updateSlots();
     setNotice(`Импортировано событий: ${events.length} · ${fileName}`);
@@ -75,7 +76,7 @@ function updateSlots() {
 
 $("ics-file").addEventListener("change", async (event) => {
   const file = event.target.files?.[0]; if (!file) return;
-  if (file.size > 15 * 1024 * 1024) { setNotice("Файл больше 15 МБ. Выберите календарь меньшего размера.", "error"); return; }
+  if (file.size > 15 * 1024 * 1024) { setNotice("Файл больше 15 МБ. Выберите календарь меньшего размера.", "error"); event.target.value = ""; return; }
   acceptICS(await file.text(), file.name); event.target.value = "";
 });
 $("demo-btn").addEventListener("click", loadDemo);
